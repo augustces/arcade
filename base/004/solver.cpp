@@ -33,12 +33,10 @@ struct Grafite{
 };
 
 struct Lapiseira{
-    float calibre;
-    Grafite * grafite;
+    float calibre {0.f};
+    Grafite * grafite {nullptr};
 
-    Lapiseira(float calibre = 0.0){
-        this->calibre = calibre;
-        this->grafite = nullptr;
+    Lapiseira(float calibre = 0.0): calibre{calibre} {
     }
     ~Lapiseira(){
         if(this->grafite != nullptr)
@@ -73,9 +71,7 @@ struct Lapiseira{
             cout << "fail: nao existe grafite\n";
             return nullptr;
         }
-        auto backup = this->grafite;
-        this->grafite = nullptr;
-        return backup;
+        return std::exchange(this->grafite, nullptr);
     }
 
     void write(int folhas){

@@ -1,10 +1,10 @@
-# Hospital
+# Hospital I
 
 <!--TOC_BEGIN-->
 - [Cadastrar Pacientes, Médicos e Plantões.](#cadastrar-pacientes-médicos-e-plantões)
 - [Funcionalidades](#funcionalidades)
-- [Interfaces](#interfaces)
 - [Diagrama de Classes](#diagrama-de-classes)
+- [Esqueleto](#esqueleto)
 <!--TOC_END-->
 
 ![](figura.jpg)
@@ -17,10 +17,7 @@ Na UTI do nosso hospital existem vários pacientes. Cada paciente é atendico po
 - cadastrar pacientes e médicos.
 - informar quais os médicos que atendem determinado paciente.
 - informar quais pacientes que são atendidos por um médico.
-- enviar mensagens de um paciente para seus médicos.
-- enviar mensagens de um médicos para seus pacientes.
 
-Use as [Interfaces](#interfaces)
 
 ***
 ## Funcionalidades
@@ -36,16 +33,16 @@ Use as [Interfaces](#interfaces)
 #__case inserir
 $addPacs fred-fratura alvis-avc goku-hemorragia silva-sinusite
 $addMeds bisturi-cirurgia snif-alergologia facada-cirurgia
-$seeAll
-Pac: alvis:avc        Meds: [ ]
-Pac: fred:fratura     Meds: [ ]
-Pac: goku:hemorragia  Meds: [ ]
-Pac: silva:sinusite   Meds: [ ]
-Med: bisturi:cirurgia Pacs: [ ]
-Med: facada:cirurgia  Pacs: [ ]
-Med: snif:alergologia Pacs: [ ]
+$show
+Pac: alvis:avc        Meds: []
+Pac: fred:fratura     Meds: []
+Pac: goku:hemorragia  Meds: []
+Pac: silva:sinusite   Meds: []
+Med: bisturi:cirurgia Pacs: []
+Med: facada:cirurgia  Pacs: []
+Med: snif:alergologia Pacs: []
 
-#- **Vinculos - 3.0 P**
+
 #    - Vincular pacientes e médicos.
 #        - Dois médicos da mesma especialidade não podem ser responsáveis pelo mesmo paciente.
 #        - O paciente não deve entrar duas vezes na lista do médico e vice-versa.
@@ -56,59 +53,104 @@ $tie bisturi fred alvis goku
 $tie snif silva alvis
 $tie facada goku
 fail: ja existe outro medico da especialidade cirurgia
-$seeAll
-Pac: alvis:avc        Meds: [ bisturi snif ]
-Pac: fred:fratura     Meds: [ bisturi ]
-Pac: goku:hemorragia  Meds: [ bisturi ]
-Pac: silva:sinusite   Meds: [ snif ]
-Med: bisturi:cirurgia Pacs: [⸱alvis⸱fred⸱goku⸱]
-Med: facada:cirurgia  Pacs: [ ]
-Med: snif:alergologia Pacs: [ alvis⸱silva ]
+$show
+Pac: alvis:avc        Meds: [bisturi, snif]
+Pac: fred:fratura     Meds: [bisturi]
+Pac: goku:hemorragia  Meds: [bisturi]
+Pac: silva:sinusite   Meds: [snif]
+Med: bisturi:cirurgia Pacs: [alvis, fred, goku]
+Med: facada:cirurgia  Pacs: []
+Med: snif:alergologia Pacs: [alvis, silva]
 
-#- **Mensagens - 3.0 P**
-#    - Pacientes podem enviar mensagens para seus medicos.
-#    - Médicos podem enviar mensagens para seus pacientes.
-#    - Qualquer pessoa pode olhar suas mensagens.
-#    - Depois de ver as mensagens elas são apagadas automaticamente.
-
-#__case mensagens
-$msg alvis bisturi posso tomar homeprazol?
-$msg goku bisturi coceira no reto eh normal?
-$inbox bisturi
-[alvis: posso tomar homeprazol?]
-[goku: coceira no reto eh normal?]
-$msg bisturi alvis chupe limao que passa
-msg bisturi goku venha na minha sala pra eu olhar
-$inbox goku
-[bisturi: venha na minha sala pra eu olhar]
-$msg goku facada
-fail: goku nao conhece facada
 $end
 ```
----
-## Interfaces
-```java
-public interface IMedico{
-	public String getId();
-	public void addPaciente(IPaciente paciente);
-	public void removerPaciente(String idPaciente);
-	public Collection<IPaciente> getPacientes();
-}
 
-public interface IPaciente{
-	public String getId();
-	public void addMedico(IMedico medico);
-	public void removerMedico(String idMedico);
-	public Collection<IMedico> getMedicos();
-}
-
-interface IBatePapense {
-	String getId();
-	void sendMessage(Mensagem msg, IBatePapense batePapense);
-	void addMessage(Mensagem msg);
-	List<Mensagem> getInbox();
-}
-```
----
+***
 ## Diagrama de Classes
 ![](diagrama.png)
+
+***
+## Esqueleto
+<!--FILTER Solver.java java-->
+```java
+interface IPaciente {
+    public String getId();
+    public void addMedico(IMedico medico);
+    public void removerMedico(String idMedico);
+    public Collection<IMedico> getMedicos();
+    public String getDiagnostico();
+}
+interface IMedico {
+    public String getId();
+    public void addPaciente(IPaciente paciente);
+    public void removerPaciente(String idPaciente);
+    public Collection<IPaciente> getPacientes();
+    public String getClasse();
+}
+class Medico implements IMedico{
+    String sender;
+    String classe;
+    TreeMap<String, IPaciente> pacientes = new TreeMap<>();
+    public Medico(String sender, String classe);
+    public String getId();
+    public void addPaciente(IPaciente paciente);
+    public void removerPaciente(String idPaciente);
+    public Collection<IPaciente> getPacientes();
+    public String getClasse();
+    public String toString();
+}
+class Paciente implements IPaciente {
+    protected String sender;
+    protected String diagnostico;
+    protected TreeMap<String, IMedico> medicos = new TreeMap<>();
+    public Paciente(String sender, String diagnostico);
+    public String getId();
+    public void addMedico(IMedico medico);
+    public void removerMedico(String idMedico);
+    public Collection<IMedico> getMedicos();
+    public String getDiagnostico();
+    public String toString();
+}
+class Hospital {
+    private TreeMap<String, IPaciente> pacientes = new TreeMap<>();
+    private TreeMap<String, IMedico> medicos = new TreeMap<>();
+    public Hospital();
+    public void removerPaciente(String sender);
+    public void removerMedico(String sender);
+    public void addPaciente(IPaciente paciente);
+    public void addMedico(IMedico medico);
+    public void vincular(String nomeMedico, String nomePaciente);
+    public String showAll();
+}
+```
+
+## Solver
+
+```java
+public class Solver {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Hospital hospital = new Hospital();
+
+        while (true) {
+            String line = scanner.nextLine();
+            System.out.println("$" + line);
+            List<String> ui = Arrays.asList(line.split(" "));
+            if (ui.get(0).equals("end")) {
+                break;
+            } else if (ui.get(0).equals("addPacs")) {
+                ui.stream().skip(1).forEach(tk -> hospital.addPaciente(new Paciente(tk.split("-")[0], tk.split("-")[1])));
+            } else if (ui.get(0).equals("addMeds")) {
+                ui.stream().skip(1).forEach(tk -> hospital.addMedico(new Medico(tk.split("-")[0], tk.split("-")[1])));
+            } else if (ui.get(0).equals("seeAll")) {
+                System.out.print(hospital.showAll());
+            } else if (ui.get(0).equals("tie")) {
+                ui.stream().skip(2).forEach(name -> hospital.vincular(ui.get(1), name));
+            } else {
+                System.out.println("fail: comando invalido");
+            }
+        }
+    }
+}
+```
+<!--FILTER_END-->
