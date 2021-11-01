@@ -1,4 +1,4 @@
-# Lapiseira e Grafite (enum, composição)
+# Lapiseira com vários Grafites
 ![](figura.jpg)
 
 <!--TOC_BEGIN-->
@@ -8,21 +8,28 @@
 - [Esqueleto](#esqueleto)
 <!--TOC_END-->
 
-Faça o modelo de uma lapiseira que pode conter um único grafite.
+Faça o modelo de uma lapiseira que pode conter vários.
 
 ## Requisitos
 - Iniciar lapiseira
     - Inicia uma lapiseira de determinado calibre sem grafite.
+    - Lapiseiras possuem um bico e um tambor.
+    - O bico guarda o grafite que está em uso. 
+    - O tambor guarda os grafites reservas.
 - Inserir grafite
     - Insere um grafite passando
         - o calibre: float.
         - a dureza: string.
         - o tamanho em mm: int.
     - Não deve aceitar um grafite de calibre não compatível.
+    - O grafite é colocado como o ÚLTIMO grafite do tambor.
+- Puxar grafite
+    - Puxa o grafite do tambor para o bico.
+    - Se já tiver um grafite no bico, esse precisa ser removido primeiro.
 - Remover grafite
-    - Retira o grafite se houver algum.
+    - Retira o grafite do bico.
 - Escrever folha
-    - Não é possível escrever se não há grafite.
+    - Não é possível escrever se não há grafite no bico.
     - Quanto mais macio o grafite, mais rapidamente ele se acaba. Para simplificar, use a seguinte regra:
         - Grafite HB: 1mm por folha.
         - Grafite 2B: 2mm por folha.
@@ -40,52 +47,53 @@ Faça o modelo de uma lapiseira que pode conter um único grafite.
 #__case inserindo grafites
 $init 0.5
 $show
-calibre: 0.5, grafite: null
+calibre: 0.5, bico: [], tambor: {}
 $inserir 0.7 2B 50
 fail: calibre incompatível
 $inserir 0.5 2B 50
 $show
-calibre: 0.5, grafite: [0.5:2B:50]
+calibre: 0.5, bico: [], tambor: {[0.5:2B:50]}
+$inserir 0.5 2B 30
+$show
+calibre: 0.5, bico: [], tambor: {[0.5:2B:50][0.5:2B:30]}
+$puxar
+$show
+calibre: 0.5, bico: [0.5:2B:50], tambor: {[0.5:2B:30]}
+$puxar
+fail: ja existe grafite no bico
+$remover
+$show
+calibre: 0.5, bico: [], tambor: {[0.5:2B:30]}
 $end
 ```
 
-```bash
-#__case inserindo e removendo
-$init 0.3
-$inserir 0.3 2B 50
-$show
-calibre: 0.3, grafite: [0.3:2B:50]
-$inserir 0.3 4B 70
-fail: ja existe grafite
-$show
-calibre: 0.3, grafite: [0.3:2B:50]
-$remover
-$inserir 0.3 4B 70
-$show
-calibre: 0.3, grafite: [0.3:4B:70]
-$end
-```
 
 ```bash
 #__case escrevendo 1
 $init 0.9
 $inserir 0.9 4B 14
+$inserir 0.9 4B 16
+$write
+fail: nao existe grafite no bico
+$puxar
+$show
+calibre: 0.9, bico: [0.9:4B:14], tambor: {[0.9:4B:16]}
 $write
 warning: grafite acabou
 $show
-calibre: 0.9, grafite: [0.9:4B:10]
+calibre: 0.9, bico: [0.9:4B:10], tambor: {[0.9:4B:16]}
 $remover
+$puxar
 $show
-calibre: 0.9, grafite: null
-$inserir 0.9 4B 16
+calibre: 0.9, bico: [0.9:4B:16], tambor: {}
 $write
 $show
-calibre: 0.9, grafite: [0.9:4B:12]
+calibre: 0.9, bico: [0.9:4B:12], tambor: {}
 $write
 fail: folha incompleta
 warning: grafite acabou
 $show
-calibre: 0.9, grafite: [0.9:4B:10]
+calibre: 0.9, bico: [0.9:4B:10], tambor: {}
 $end
 ```
 
@@ -110,11 +118,13 @@ class Grafite {
 }
 class Lapiseira {
     public float calibre;
-    public Grafite grafite;
+    public Grafite bico;
+    public ArrayList<Grafite> tambor;
     public Lapiseira(float calibre);
     public String toString();
     public boolean inserir(Grafite grafite);
     public Grafite remover();
+    public boolean pull();
     public void writePage();
 }
 class Solver{
@@ -142,78 +152,13 @@ class Solver{
                 System.out.println(lapiseira);
             } else if (ui[0].equals("write")) {
                 lapiseira.writePage();
-            } else {
+            } else if (ui[0].equals("puxar")) {
+                lapiseira.pull();
+            }  else {
                 System.out.println("fail: comando invalido");
             }
         }
         scanner.close();
-    }
-}
-
-class Manual {
-    public static void main(String[] args) {
-        //case inserindo grafites
-        Lapiseira lapiseira = new Lapiseira(0.5f);
-        System.out.println(lapiseira);
-        //calibre: 0.5, grafite: null
-        lapiseira.inserir(new Grafite(0.7f, "2B", 50));
-        //fail: calibre incompatível
-        lapiseira.inserir(new Grafite(0.5f, "2B", 50));
-        System.out.println(lapiseira);
-        //calibre: 0.5, grafite: [0.5:2B:50]
-
-        //case inserindo e removendo
-        lapiseira = new Lapiseira(0.3f);
-        lapiseira.inserir(new Grafite(0.3f, "2B", 50));
-        System.out.println(lapiseira);
-        //calibre: 0.3, grafite: [0.3:2B:50]
-        lapiseira.inserir(new Grafite(0.3f, "4B", 70));
-        //fail: ja existe grafite
-        System.out.println(lapiseira);
-        //calibre: 0.3, grafite: [0.3:2B:50]
-        lapiseira.remover();
-        lapiseira.inserir(new Grafite(0.3f, "4B", 70));
-        System.out.println(lapiseira);
-        //calibre: 0.3, grafite: [0.3:4B:70]
-
-        //case escrevendo 1
-        lapiseira = new Lapiseira(0.9f);
-        lapiseira.inserir(new Grafite(0.9f, "4B", 4));
-        lapiseira.writePage();
-        //warning: grafite acabou
-        System.out.println(lapiseira);
-        //calibre: 0.9, grafite: null
-        lapiseira.inserir(new Grafite(0.9f, "4B", 30));
-        lapiseira.writePage();
-        System.out.println(lapiseira);
-        //calibre: 0.9, grafite: [0.9:4B:6]
-        lapiseira.writePage();
-        lapiseira.writePage();
-        lapiseira.writePage();
-        //fail: folhas escritas completas: 1
-        //warning: grafite acabou
-        System.out.println(lapiseira);
-        //calibre: 0.9, grafite: null
-
-        //case escrevendo 2
-        lapiseira = new Lapiseira(0.9f);
-        lapiseira.inserir(new Grafite(0.9f, "2B", 15));
-        System.out.println(lapiseira);
-        //calibre: 0.9, grafite: [0.9:2B:15]
-        lapiseira.writePage();
-        lapiseira.writePage();
-        lapiseira.writePage();
-        lapiseira.writePage();
-        System.out.println(lapiseira);
-        //calibre: 0.9, grafite: [0.9:2B:7]
-        lapiseira.writePage();
-        lapiseira.writePage();
-        lapiseira.writePage();
-        lapiseira.writePage();
-        //fail: folhas escritas completas: 3
-        //warning: grafite acabou
-        System.out.println(lapiseira);
-        //calibre: 0.9, grafite: null
     }
 }
 ```

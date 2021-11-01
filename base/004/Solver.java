@@ -33,25 +33,25 @@ class Lapiseira {
 
     public Lapiseira(float calibre) {
         this.calibre = calibre;
-        this.grafite = null;
+        this.bico = null;
     }
 
     public String toString() {
         String saida = "calibre: " + calibre + ", grafite: ";
-        if (grafite != null)
-            saida += "[" + grafite + "]";
+        if (bico != null)
+            saida += "[" + bico + "]";
         else
             saida += "null";
         return saida;
     }
 
     public boolean inserir(Grafite grafite) {
-        if(this.grafite == null) {
+        if(this.bico == null) {
             if(this.calibre != grafite.calibre) {
                 System.out.println("fail: calibre incompatível");
                 return false;
             } else {
-                this.grafite = grafite;
+                this.bico = grafite;
                 return true;
             }
         }
@@ -60,27 +60,27 @@ class Lapiseira {
     }
 
     public Grafite remover() {
-        if(this.grafite == null) {
+        if(this.bico == null) {
             System.out.println("fail: nao existe grafite");
             return null;
         }
-        Grafite backup = this.grafite;
-        this.grafite = null;
+        Grafite backup = this.bico;
+        this.bico = null;
         return backup;
     }
 
-    public void write(int folhas) {
-        if(this.grafite == null) {
+    public void writePage() {
+        if(this.bico == null) {
             System.out.println("fail: nao existe grafite");
             return;
         }
-        this.grafite.tamanho -= this.grafite.desgastePorFolha() * folhas;
-        if(this.grafite.tamanho < 0) {
-            System.out.println("fail: folhas escritas completas: " + (folhas + (int)(this.grafite.tamanho/this.grafite.desgastePorFolha()) - 1));
+        this.bico.tamanho -= this.bico.desgastePorFolha();
+        if(this.bico.tamanho < 10) {
+            System.out.println("fail: folha incompleta");
         }
-        if(this.grafite.tamanho <= 0) {
+        if(this.bico.tamanho <= 10) {
+            this.bico.tamanho = 10;
             System.out.println("warning: grafite acabou");
-            this.grafite = null;
         }
     }
 }
@@ -96,7 +96,7 @@ class Solver{
             if(ui[0].equals("end")) {
                 break;
             } else if(ui[0].equals("help")) {
-                System.out.println("init _calibre; inserir _calibre _dureza _tamanho; remover; write _folhas");
+                System.out.println("init _calibre; inserir _calibre _dureza _tamanho; remover; writePage _folhas");
             } else if(ui[0].equals("init")) { //calibre
                 lapiseira = new Lapiseira(Float.parseFloat(ui[1]));
             } else if(ui[0].equals("inserir")) {//calibre dureza tamanho
@@ -109,7 +109,7 @@ class Solver{
             } else if(ui[0].equals("show")) {
                 System.out.println(lapiseira);
             } else if (ui[0].equals("write")) {
-                lapiseira.write(Integer.parseInt(ui[1]));
+                lapiseira.writePage();
             } else {
                 System.out.println("fail: comando invalido");
             }
@@ -147,15 +147,17 @@ class Manual {
         //case escrevendo 1
         lapiseira = new Lapiseira(0.9f);
         lapiseira.inserir(new Grafite(0.9f, "4B", 4));
-        lapiseira.write(1);
+        lapiseira.writePage();
         //warning: grafite acabou
         System.out.println(lapiseira);
         //calibre: 0.9, grafite: null
         lapiseira.inserir(new Grafite(0.9f, "4B", 30));
-        lapiseira.write(6);
+        lapiseira.writePage();
         System.out.println(lapiseira);
         //calibre: 0.9, grafite: [0.9:4B:6]
-        lapiseira.write(3);
+        lapiseira.writePage();
+        lapiseira.writePage();
+        lapiseira.writePage();
         //fail: folhas escritas completas: 1
         //warning: grafite acabou
         System.out.println(lapiseira);
@@ -166,10 +168,16 @@ class Manual {
         lapiseira.inserir(new Grafite(0.9f, "2B", 15));
         System.out.println(lapiseira);
         //calibre: 0.9, grafite: [0.9:2B:15]
-        lapiseira.write(4);
+        lapiseira.writePage();
+        lapiseira.writePage();
+        lapiseira.writePage();
+        lapiseira.writePage();
         System.out.println(lapiseira);
         //calibre: 0.9, grafite: [0.9:2B:7]
-        lapiseira.write(4);
+        lapiseira.writePage();
+        lapiseira.writePage();
+        lapiseira.writePage();
+        lapiseira.writePage();
         //fail: folhas escritas completas: 3
         //warning: grafite acabou
         System.out.println(lapiseira);

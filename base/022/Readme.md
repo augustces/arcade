@@ -120,13 +120,8 @@ class Hospital {
     public void addPaciente(IPaciente paciente);
     public void addMedico(IMedico medico);
     public void vincular(String nomeMedico, String nomePaciente);
-    public String showAll();
+    public String toString();
 }
-```
-
-## Solver
-
-```java
 public class Solver {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -139,7 +134,8 @@ public class Solver {
             if (ui.get(0).equals("end")) {
                 break;
             } else if (ui.get(0).equals("addPacs")) {
-                ui.stream().skip(1).forEach(tk -> hospital.addPaciente(new Paciente(tk.split("-")[0], tk.split("-")[1])));
+                ui.stream().skip(1)
+                        .forEach(tk -> hospital.addPaciente(new Paciente(tk.split("-")[0], tk.split("-")[1])));
             } else if (ui.get(0).equals("addMeds")) {
                 ui.stream().skip(1).forEach(tk -> hospital.addMedico(new Medico(tk.split("-")[0], tk.split("-")[1])));
             } else if (ui.get(0).equals("seeAll")) {

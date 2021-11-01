@@ -35,23 +35,23 @@ Seu sistema deverá:
 
 ```bash
 #__case inicializar
-# O comando "$in" insere uma pessoa no carro.
-# O comando "$out" retira uma pessoa do carro".
+# O comando "$enter" insere uma pessoa no carro.
+# O comando "$leave" retira uma pessoa do carro".
 # O comando "$show" mostra o estado do carro.
 # Deve ser emitido um erro caso não seja possível inserir ou retirar uma pessoa.
 $show
 pass: 0, gas: 0, km: 0
-$in
-$in
+$enter
+$enter
 $show
 pass: 2, gas: 0, km: 0
-$in
+$enter
 fail: limite de pessoas atingido
 $show
 pass: 2, gas: 0, km: 0
-$out
-$out
-$out
+$leave
+$leave
+$leave
 fail: nao ha ninguem no carro
 $show
 pass: 0, gas: 0, km: 0
@@ -69,7 +69,7 @@ $drive 10
 fail: nao ha ninguem no carro
 
 #__case dirigir
-$in
+$enter
 $drive 10
 $show
 pass: 1, gas: 50, km: 10
@@ -107,8 +107,8 @@ class Car{
     public int km; // quantidade de quilometragem
     public Car();
     public String toString();
-    public void in();
-    public void out();
+    public void enter();
+    public void leave();
     public void fuel(int gas);
     public void drive (int km);
 };
@@ -123,10 +123,10 @@ class Solver{
             System.out.println("$" + line);
             if(ui[0].equals("end")) {
                 break;
-            } else if(ui[0].equals("in")) {
-                car.in();
-            } else if(ui[0].equals("out")) {
-                car.out();
+            } else if(ui[0].equals("enter")) {
+                car.enter();
+            } else if(ui[0].equals("leave")) {
+                car.leave();
             } else if(ui[0].equals("show")) {
                 System.out.println(car.toString());
             } else if (ui[0].equals("drive")) {//km
@@ -144,17 +144,17 @@ class Manual {
         Car car = new Car();
         System.out.println(car);
         //pass: 0, gas: 0, km: 0
-        car.in();
-        car.in();
+        car.enter();
+        car.enter();
         System.out.println(car);
         //pass: 2, gas: 0, km: 0
-        car.in();
+        car.enter();
         //fail: limite de pessoas atingido
         System.out.println(car);
         //pass: 2, gas: 0, km: 0
-        car.out();
-        car.out();
-        car.out();
+        car.leave();
+        car.leave();
+        car.leave();
         //fail: nao ha ninguem no carro
         System.out.println(car);
         //pass: 0, gas: 0, km: 0
@@ -167,7 +167,7 @@ class Manual {
         car.drive(10);
         //fail: nao ha ninguem no carro
 
-        car.in();
+        car.enter();
         car.drive(10);
         System.out.println(car);
         //pass: 1, gas: 50, km: 10

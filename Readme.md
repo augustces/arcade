@@ -24,10 +24,13 @@
 - [@002 Carro com pessoas (solver, manual, diagrama)](base/002/Readme.md) 
 - [@001 Calculadora com bateria (solver, manual, diagrama)](base/001/Readme.md) 
 
-## 02. Duas classes
-- [@017 Cofre (enum, composição, lógica)](base/017/Readme.md) 
-- [@004 Lapiseira e Grafite (enum, composição)](base/004/Readme.md) 
-- [@003 Motoca infantil no parque (composição, solver, manual)](base/003/Readme.md) 
+## 02. Agregação Simples
+- Duas classes
+    - [@017 Cofre (enum, composição, lógica)](base/017/Readme.md) 
+    - [@004 Lapiseira e Grafite (enum, composição)](base/004/Readme.md) 
+    - [@003 Motoca infantil no parque (composição, solver, manual)](base/003/Readme.md) 
+- Upgrades
+    - [@020 Lapiseira com vários Grafites](base/020/Readme.md)
 
 ## 03. Modificadores de Acesso
 - [@006 Tamagotchi  (modificadores de acesso, gets, sets)](base/006/Readme.md) 
@@ -71,7 +74,7 @@
 ## 12. Herança II
 - Todo
     - [@023 Salário (Herança, Polimorfismo)](base/023/Readme.md) 
-    - [@022 Hospital](base/022/Readme.md) 
+    - [@022 Hospital I](base/022/Readme.md) 
 
 ## 13. Lógica II
 - Todo

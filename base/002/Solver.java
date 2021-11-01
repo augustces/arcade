@@ -19,7 +19,7 @@ class Car{
         return "pass: " + pass + ", gas: " + gas + ", km: " + km;
     }
 
-    public void in() {
+    public void enter() {
         if (pass < passMax) {
             pass += 1;
             return;
@@ -27,7 +27,7 @@ class Car{
         System.out.println("fail: limite de pessoas atingido");
     }
 
-    public void out() {
+    public void leave() {
         if (pass > 0) {
             pass-=1;
             return;
@@ -69,10 +69,10 @@ class Solver{
             System.out.println("$" + line);
             if(ui[0].equals("end")) {
                 break;
-            } else if(ui[0].equals("in")) {
-                car.in();
-            } else if(ui[0].equals("out")) {
-                car.out();
+            } else if(ui[0].equals("enter")) {
+                car.enter();
+            } else if(ui[0].equals("leave")) {
+                car.leave();
             } else if(ui[0].equals("show")) {
                 System.out.println(car.toString());
             } else if (ui[0].equals("drive")) {//km
@@ -90,17 +90,17 @@ class Manual {
         Car car = new Car();
         System.out.println(car);
         //pass: 0, gas: 0, km: 0
-        car.in();
-        car.in();
+        car.enter();
+        car.enter();
         System.out.println(car);
         //pass: 2, gas: 0, km: 0
-        car.in();
+        car.enter();
         //fail: limite de pessoas atingido
         System.out.println(car);
         //pass: 2, gas: 0, km: 0
-        car.out();
-        car.out();
-        car.out();
+        car.leave();
+        car.leave();
+        car.leave();
         //fail: nao ha ninguem no carro
         System.out.println(car);
         //pass: 0, gas: 0, km: 0
@@ -113,7 +113,7 @@ class Manual {
         car.drive(10);
         //fail: nao ha ninguem no carro
 
-        car.in();
+        car.enter();
         car.drive(10);
         System.out.println(car);
         //pass: 1, gas: 50, km: 10
